@@ -1,0 +1,93 @@
+#include <stdio.h>
+#include <string.h>
+#include <ctype.h>
+void preprocessKey(char key[], char matrix[5][5]) {
+    int keyLen = strlen(key);
+    char alphabet[26] = "ABCDEFGHIKLMNOPQRSTUVWXYZ";
+    int alphabetIndex = 0;
+    int keyIndex = 0;
+    int usedChars[26] = {0};
+    for (int i = 0; i < 5; i++) {
+        for (int j = 0; j < 5; j++) {
+            if (keyIndex < keyLen) {
+                char c = toupper(key[keyIndex]);
+                if (c == 'J') {
+                    c = 'I';
+                }
+                if (!usedChars[c - 'A']) {
+                    matrix[i][j] = c;
+                     usedChars[c - 'A'] = 1;
+                    keyIndex++;
+                } else {
+                    keyIndex++;
+                    j--;
+                }
+            } else {
+                while (usedChars[alphabet[alphabetIndex] - 'A']) {
+                    alphabetIndex++;
+                } 
+                matrix[i][j] = alphabet[alphabetIndex];
+                usedChars[alphabet[alphabetIndex] - 'A'] = 1;
+                alphabetIndex++;
+            }  
+        }
+    }
+}
+void findPositions(char matrix[5][5], char c, int *row, int *col) {
+    if (c == 'J') {
+        c = 'I';
+    }
+    for (int i = 0; i < 5; i++) {
+        for (int j = 0; j < 5; j++) {
+            if (matrix[i][j] == c) {
+                *row = i;
+                *col = j;
+                return;
+            }
+        }
+    }
+}
+void encryptPair(char matrix[5][5], char a, char b) {
+    int rowA, colA, rowB, colB;
+    findPositions(matrix, a, &rowA, &colA);
+    findPositions(matrix, b, &rowB, &colB);
+
+    if (rowA == rowB) {
+        colA = (colA + 1) % 5;
+        colB = (colB + 1) % 5;
+    } else if (colA == colB) {
+        rowA = (rowA + 1) % 5;
+        rowB = (rowB + 1) % 5;
+    } else {
+        int temp = colA;
+        colA = colB;
+        colB = temp;
+    }
+
+    printf("%c%c", matrix[rowA][colA], matrix[rowB][colB]);
+}
+
+int main() {
+    char key[25], message[100];
+    char matrix[5][5];
+
+    printf("Enter the key (up to 25 characters): ");
+    scanf("%s", key);
+
+    printf("Enter the message to encrypt: ");
+    scanf("%s", message);
+
+    preprocessKey(key, matrix);
+
+    printf("Encrypted message: ");
+    int len = strlen(message);
+    for (int i = 0; i < len; i += 2) {
+        char a = toupper(message[i]);
+        char b = (i + 1 < len) ? toupper(message[i + 1]) : 'X';
+        encryptPair(matrix, a, b);
+    }
+
+    printf("\n");
+
+    return 0;
+}
