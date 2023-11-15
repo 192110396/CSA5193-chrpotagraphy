@@ -1,0 +1,50 @@
+#include <stdio.h>
+#include <string.h>
+void encrypt(char *message, int key) 
+{
+    for (int i = 0; message[i] != '\0'; i++) {
+        char ch = message[i];
+        if (ch >= 'a' && ch <= 'z') {
+            message[i] = (ch + key - 'a') % 26 + 'a';
+        } else if (ch >= 'A' && ch <= 'Z') {
+            message[i] = (ch + key - 'A') % 26 + 'A';
+        }
+    }
+}
+void decrypt(char *message, int key) {
+    for (int i = 0; message[i] != '\0'; i++) {
+        char ch = message[i];
+        if (ch >= 'a' && ch <= 'z') {
+            message[i] = (ch - key - 'a' + 26) % 26 + 'a';
+        } else if (ch >= 'A' && ch <= 'Z') {
+            message[i] = (ch - key - 'A' + 26) % 26 + 'A';
+        }	
+    }
+}
+
+int main() {
+    char message[100];
+    int key;
+
+    printf("Enter a message: ");  
+    scanf("%s", message);
+
+    printf("Enter a key (a positive integer): ");
+    scanf("%d", &key);
+
+    int choice;
+    printf("Choose an operation (1 for encryption, 2 for decryption): ");
+    scanf("%d", &choice);
+
+    if (choice == 1) {
+        encrypt(message, key);
+        printf("Encrypted message: %s\n", message);
+    } else if (choice == 2) {
+        decrypt(message, key);
+        printf("Decrypted message: %s\n", message);
+    } else {
+        printf("Invalid choice.\n");
+    }
+
+    return 0;
+}
