@@ -1,0 +1,45 @@
+#include <stdio.h>
+#include <string.h>
+#include <ctype.h>
+#include <math.h>
+void encrypt(char *message, int keyMatrix[3][3], int keySize) {
+    int len = strlen(message);
+    while (len % keySize != 0) {
+        message[len] = 'X';
+        len++;
+    }
+    message[len] = '\0';
+    for (int i = 0; i < len; i += keySize) {
+        for (int j = 0; j < keySize; j++) {
+            int sum = 0;
+            for (int k = 0; k < keySize; k++) {
+                sum += (keyMatrix[j][k] * (message[i + k] - 'A'));
+            }
+            message[i + j] = (sum % 26) + 'A';
+        }
+    }
+}
+int main() {
+    char message[100];
+    int keyMatrix[3][3];
+    int keySize;
+    printf("Enter the key size (2 or 3): ");
+    scanf("%d", &keySize);
+    if (keySize != 2 && keySize != 3) {
+        printf("Invalid key size. The program only supports key sizes 2 or 3.\n");
+        return 1;
+    }
+    printf("Enter the key matrix (uppercase letters without spaces):\n");
+    for (int i = 0; i < keySize; i++) {
+        for (int j = 0; j < keySize; j++) {
+            char c;
+            scanf(" %c", &c);
+            keyMatrix[i][j] = c - 'A';
+        }
+    }
+    printf("Enter the message to encrypt (uppercase letters without spaces): ");
+    scanf("%s", message);
+    encrypt(message, keyMatrix, keySize);
+    printf("Encrypted message: %s\n", message);
+    return 0;
+}
