@@ -1,0 +1,39 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <openssl/des.h>
+int main() 
+{
+    const char* plaintext = "Hello, World!";
+    const char* key = "01234567";  
+    if (strlen(key) != 8) 
+	{
+        fprintf(stderr, "Key length should be 8 bytes\n");
+        return 1;
+    }
+    DES_cblock des_key;
+    DES_key_schedule key_schedule;
+
+    if (DES_set_key_checked(&des_key, &key_schedule) != 0) {
+        fprintf(stderr, "Key scheduling error\n");
+        return 1;
+    } 
+    unsigned char input[8];
+    unsigned char output[8];
+    size_t len = strlen(plaintext);
+    size_t padding = 8 - (len % 8);
+    if (padding < 8) {
+        memset(input, 0, 8);
+        strncpy((char*)input, plaintext, len);
+    } else {
+        memcpy(input, plaintext, 8);
+    }
+    DES_ecb_encrypt((const_DES_cblock*)input, (DES_cblock*)output, &key_schedule, DES_ENCRYPT);
+    printf("Plaintext: %s\n", plaintext);
+    printf("Ciphertext: ");
+    for (int i = 0; i < 8; i++) {
+        printf("%02X", output[i]);	 
+    }
+    printf("\n");
+    return 0;
+}
